@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Evaluación</title>
+<style>
+:root{--bg:#f1f2fa;--card:#fff;--fg:#1d1f2b;--mu:#6b7085;--ac:#5b5bd6;--ac2:#8b5cf6;--ok:#1f9d55;--bad:#d64545;--wa:#d98e04;--bd:#e1e3f0;--tint:#eeeefc;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--bg:#12131c;--card:#1d1f2e;--fg:#eceef8;--mu:#9498b0;--ac:#8c8cf5;--ac2:#a78bfa;--bd:#2c2f45;--tint:#26284a;--ok:#3ec37a;--bad:#ef6b6b;--wa:#f0b43c}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:16px/1.45 system-ui,-apple-system,sans-serif}
+#app{max-width:560px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;padding:calc(18px + env(safe-area-inset-top)) 16px calc(18px + env(safe-area-inset-bottom))}
+h1{font-size:26px;margin:0 0 6px}h2{font-size:20px;line-height:1.35;margin:6px 0 16px}
+p{margin:6px 0}.mu{color:var(--mu)}
+.hero{margin:auto 0;text-align:center;animation:up .6s both}
+.emoji{font-size:64px;animation:pop .7s both}
+.btn{display:block;width:100%;min-height:54px;border:2px solid var(--bd);border-radius:16px;background:var(--card);color:var(--fg);font:600 16px inherit;font-family:inherit;padding:12px;margin-top:12px;cursor:pointer;text-align:center;transition:transform .12s}
+.btn:active{transform:scale(.97)}
+.btn.p{background:linear-gradient(135deg,var(--ac),var(--ac2));border-color:transparent;color:#fff}
+.btn:disabled{opacity:.4}
+.top{display:flex;justify-content:space-between;font-size:14px;color:var(--mu)}
+.bar{height:8px;border-radius:8px;background:var(--bd);overflow:hidden;margin:8px 0 18px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:8px;transition:width .4s}
+.card{background:var(--card);border-radius:20px;padding:18px;box-shadow:0 6px 24px rgba(60,60,120,.08)}
+.in-r{animation:inr .35s both}.in-l{animation:inl .35s both}
+.opt{display:flex;align-items:center;gap:12px;width:100%;min-height:54px;text-align:left;margin-top:10px;padding:12px 14px;border:2px solid var(--bd);border-radius:14px;background:var(--card);color:var(--fg);font:inherit;cursor:pointer;transition:all .15s}
+.opt:active{transform:scale(.98)}
+.opt.sel{border-color:var(--ac);background:var(--tint)}
+.chk{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--bd);position:relative;transition:all .15s}
+.sel .chk{border-color:var(--ac);background:var(--ac)}
+.sel .chk::after{content:"✓";color:#fff;font-size:13px;position:absolute;inset:0;text-align:center;line-height:18px}
+.vf{display:grid;grid-template-columns:1fr 1fr;gap:10px}.vf .opt{justify-content:center;font-weight:600;min-height:72px}
+.hint{font-size:13px;color:var(--mu);margin:0}
+.inc{margin-top:14px}.inc input{width:100%;margin-top:6px;padding:12px;font:inherit;font-size:16px;color:var(--fg);background:var(--bg);border:2px solid var(--bd);border-radius:12px;outline:0}
+.inc input:focus{border-color:var(--ac)}
+.esc-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.esc-row{display:flex;align-items:center;gap:10px}
+.esc-idx{font-weight:700;color:var(--mu);min-width:24px;text-align:right}
+.esc-inp{flex:1;width:100%;padding:12px 14px;font:inherit;font-size:16px;color:var(--fg);background:var(--bg);border:2px solid var(--bd);border-radius:12px;outline:0;transition:border-color .15s}
+.esc-inp:focus{border-color:var(--ac)}
+.nav{display:flex;gap:10px;margin-top:auto;padding-top:18px}.nav .btn{margin:0}
+.ring{position:relative;width:200px;height:200px;margin:20px auto}
+.ring svg{transform:rotate(-90deg);width:100%;height:100%}
+.ring circle{fill:none;stroke-width:9;stroke-linecap:round}
+.ring .bg{stroke:var(--bd)}.ring .arc{stroke:var(--ac);transition:stroke-dashoffset 1.3s cubic-bezier(.2,.8,.2,1)}
+.ring .arc.ok{stroke:var(--ok)}.ring .arc.wa{stroke:var(--wa)}.ring .arc.bad{stroke:var(--bad)}
+.ring div{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:44px;font-weight:700}
+.ring small{font-size:15px;font-weight:400;color:var(--mu)}
+.rv{margin-top:14px;animation:up .45s both}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;color:#fff;background:var(--bad)}
+.badge.ok{background:var(--ok)}.badge.part{background:var(--wa)}.badge.none{background:var(--mu)}
+.rv h3{font-size:16px;margin:10px 0}
+.ro{padding:8px 10px;border-radius:10px;margin-top:6px;background:var(--bg);font-size:15px}
+.ro.ok{background:color-mix(in srgb,var(--ok) 18%,transparent)}.ro.bad{background:color-mix(in srgb,var(--bad) 18%,transparent)}
+.ro em{color:var(--mu);font-size:13px}
+@keyframes inr{from{opacity:0;transform:translateX(40px)}}
+@keyframes inl{from{opacity:0;transform:translateX(-40px)}}
+@keyframes up{from{opacity:0;transform:translateY(16px)}}
+@keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<script src="quiz.js"></script>
+</head><body>
+<div id="app"></div>
+<script>
+const $=s=>document.querySelector(s),app=$('#app');
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const norm=s=>String(s??'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\s]/g,' ').replace(/\s+/g,' ').trim();
+const fmt=n=>Number.isInteger(n)?n:n.toFixed(1);
+const letra=(x,k)=>x.letra||String.fromCharCode(97+k);
+const total=()=>Q.preguntas.reduce((s,q)=>s+(+q.puntos||0),0);
+
+function sim(a,b){
+ a=norm(a);b=norm(b);
+ if(!a||!b)return false;
+ if(a===b)return true;
+ const m=a.length,n=b.length;
+ if(Math.abs(m-n)>2)return false;
+ const maxErr=Math.min(m,n)<=4?1:2;
+ const d=[];
+ for(let i=0;i<=m;i++)d[i]=[i];
+ for(let j=0;j<=n;j++)d[0][j]=j;
+ for(let i=1;i<=m;i++){
+  for(let j=1;j<=n;j++){
+   const cost=a[i-1]===b[j-1]?0:1;
+   d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+cost);
+  }
+ }
+ return d[m][n]<=maxErr;
+}
+
+let Q,S;
+
+function pj(t){return JSON.parse(t.replace(/^\uFEFF/,'').replace(/^\s*(?:window\.)?QUIZ\s*=\s*/,'').replace(/;\s*$/,''))}
+function leer(f){
+ if(!f)return;
+ f.text().then(t=>init(pj(t))).catch(err=>{$('#err').textContent='Archivo inválido: '+(err&&err.message||err)});
+}
+function loader(m){
+ app.innerHTML=`<div class="hero"><div class="emoji">📂</div><h1>Cargar evaluación</h1><p class="mu">${esc(m)}</p><label class="btn p">Elegir archivo (quiz.js o quiz.json)<input type="file" accept=".js,.json,text/javascript,application/json" hidden onchange="leer(this.files[0])"></label><p id="err" style="color:var(--bad);margin-top:10px"></p></div>`;
+}
+function init(d){
+ if(!d||!Array.isArray(d.preguntas)||!d.preguntas.length)throw 'El archivo no contiene una lista "preguntas" con al menos una pregunta.';
+ Q=d;document.title=Q.titulo||'Evaluación';home();
+}
+function home(){
+ app.innerHTML=`<div class="hero"><div class="emoji">📝</div><h1>${esc(Q.titulo||'Evaluación')}</h1><p class="mu">${Q.preguntas.length} preguntas · ${fmt(total())} puntos</p><p class="mu">La retroalimentación se muestra al finalizar.</p><button class="btn p" onclick="start()">Comenzar</button></div>`;
+}
+
+function shuffle(arr){
+ const a=[...arr];
+ for(let i=a.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [a[i],a[j]]=[a[j],a[i]];
+ }
+ return a;
+}
+
+function start(){
+ S={
+  i:0,
+  incisos:Q.preguntas.map(q=>{
+   if(q.tipo!=='inciso'||!Array.isArray(q.incisos))return null;
+   const origCorrect=q.incisos.find((x,k)=>norm(letra(x,k))===norm(q.respuesta));
+   const origCorrectText=origCorrect?origCorrect.texto:'';
+   return shuffle(q.incisos).map((x,k)=>({
+    letra:String.fromCharCode(97+k),
+    texto:x.texto,
+    isCorrect:x.texto===origCorrectText
+   }));
+  }),
+  ans:Q.preguntas.map(q=>{
+   if(q.tipo==='multiple')return [];
+   if(q.tipo==='escrita')return new Array(Math.max(1,parseInt(q.numInputs)||1)).fill('');
+   return undefined;
+  })
+ };
+ quiz(1);
+}
+function setVF(v){S.ans[S.i]=v;quiz(0)}
+function pick(k){S.ans[S.i]=k;quiz(0)}
+function tog(k){
+ const q=Q.preguntas[S.i],a=S.ans[S.i];
+ if(q.opciones.filter(o=>o.correcta).length===1)S.ans[S.i]=[k];
+ else S.ans[S.i]=a.includes(k)?a.filter(x=>x!==k):[...a,k];
+ quiz(0);
+}
+function setEscrita(k,val){
+ if(!Array.isArray(S.ans[S.i])){
+  const num=Math.max(1,parseInt(Q.preguntas[S.i].numInputs)||1);
+  S.ans[S.i]=new Array(num).fill('');
+ }
+ S.ans[S.i][k]=val;
+}
+function go(d){
+ const n=Q.preguntas.length;
+ if(S.i+d>=n)return fin();
+ S.i=Math.max(0,S.i+d);
+ quiz(d||1);
+}
+
+function quiz(dir){
+ const n=Q.preguntas.length,q=Q.preguntas[S.i],a=S.ans[S.i];let b='';
+ if(q.tipo==='vf'){
+  b=`<div class="vf"><button class="opt ${a===true?'sel':''}" onclick="setVF(true)">Verdadero</button><button class="opt ${a===false?'sel':''}" onclick="setVF(false)">Falso</button></div>`;
+ }else if(q.tipo==='multiple'){
+  const one=q.opciones.filter(o=>o.correcta).length===1;
+  b=`<p class="hint">${one?'Elige una opción':'Elige todas las correctas'}</p>`+q.opciones.map((o,k)=>`<button class="opt ${a.includes(k)?'sel':''}" onclick="tog(${k})"><i class="chk"></i><span>${esc(o.texto)}</span></button>`).join('');
+ }else if(q.tipo==='escrita'){
+  const num=Math.max(1,parseInt(q.numInputs)||1);
+  if(!Array.isArray(S.ans[S.i]))S.ans[S.i]=new Array(num).fill('');
+  const cur=S.ans[S.i];
+  b=`<p class="hint">${num>1?`Escribe ${num} respuestas distintas (no repitas respuestas)`:'Escribe tu respuesta a continuación'}</p>
+  <div class="esc-list">`+
+  Array.from({length:num},(_,k)=>`
+    <div class="esc-row">
+      ${num>1?`<span class="esc-idx">${k+1}.</span>`:''}
+      <input type="text" class="esc-inp" placeholder="Respuesta ${num>1?(k+1):''}..." value="${esc(cur[k]||'')}" oninput="setEscrita(${k},this.value)">
+    </div>
+  `).join('')+`</div>`;
+ }else{
+  const incList=(S&&S.incisos&&S.incisos[S.i])||q.incisos;
+  b='<p class="hint">Elige una opción</p>'+incList.map((x,k)=>`<button class="opt ${a===k?'sel':''}" onclick="pick(${k})"><i class="chk"></i><span><b>${esc(letra(x,k))})</b> ${esc(x.texto)}</span></button>`).join('');
+ }
+ const last=S.i===n-1;
+ app.innerHTML=`<div class="top"><span>Pregunta ${S.i+1} de ${n}</span><span>${fmt(+q.puntos||0)} pts</span></div>
+<div class="bar"><i style="width:${(S.i+1)/n*100}%"></i></div>
+<div class="card ${dir>0?'in-r':dir<0?'in-l':''}"><h2>${esc(q.enunciado)}</h2>${b}</div>
+<div class="nav"><button class="btn" ${S.i?'':'disabled'} onclick="go(-1)">← Anterior</button><button class="btn p" onclick="go(1)">${last?'Finalizar ✓':'Siguiente →'}</button></div>`;
+}
+
+function grade(q,a,i){
+ const p=+q.puntos||0;let f=0,ans=false;
+ if(q.tipo==='vf'){
+  ans=typeof a==='boolean';f=ans&&a===q.respuesta?1:0;
+ }else if(q.tipo==='multiple'){
+  a=a||[];ans=a.length>0;
+  const c=q.opciones.map((o,i)=>o.correcta?i:-1).filter(i=>i>=0);
+  const g=a.filter(i=>c.includes(i)).length;
+  f=c.length?Math.max(0,(g-(a.length-g))/c.length):0;
+ }else if(q.tipo==='escrita'){
+  const num=Math.max(1,parseInt(q.numInputs)||1);
+  const userAnswers=Array.isArray(a)?a:(a!==undefined&&a!==null?[a]:[]);
+  ans=userAnswers.some(x=>String(x??'').trim().length>0);
+  const targets=(Array.isArray(q.respuestas)?q.respuestas.flat():String(q.respuestas||'').split(','))
+    .map(s=>String(s).trim()).filter(Boolean);
+  const usedTargets=new Set();
+  const usedUserValues=new Set();
+  const details=[];
+  let correctCount=0;
+
+  for(let k=0;k<num;k++){
+   const raw=String(userAnswers[k]??'').trim();
+   const userVal=norm(raw);
+   if(!userVal){
+    details.push({val:raw,ok:false,duplicate:false,empty:true});
+    continue;
+   }
+   let isDup=false;
+   for(const prev of usedUserValues){
+    if(sim(userVal,prev)){
+     isDup=true;break;
+    }
+   }
+   if(isDup){
+    details.push({val:raw,ok:false,duplicate:true});
+    continue;
+   }
+   let matchIdx=-1;
+   for(let j=0;j<targets.length;j++){
+    if(!usedTargets.has(j)&&sim(userVal,norm(targets[j]))){
+     matchIdx=j;break;
+    }
+   }
+   if(matchIdx!==-1){
+    usedTargets.add(matchIdx);
+    usedUserValues.add(userVal);
+    correctCount++;
+    details.push({val:raw,ok:true,duplicate:false,target:targets[matchIdx]});
+   }else{
+    details.push({val:raw,ok:false,duplicate:false});
+   }
+  }
+  f=num>0?(correctCount/num):0;
+  return{pts:+(p*f).toFixed(2),f,ans,details,correctCount,num,targets};
+ }else{
+  ans=typeof a==='number';
+  const incList=(S&&S.incisos&&S.incisos[i!==undefined?i:S.i])||q.incisos;
+  const picked=incList&&incList[a];
+  f=ans&&picked&&(picked.isCorrect!==undefined?picked.isCorrect:norm(letra(picked,a))===norm(q.respuesta))?1:0;
+ }
+ return{pts:+(p*f).toFixed(2),f,ans};
+}
+
+function fin(){
+ const un=S.ans.filter((a,i)=>!grade(Q.preguntas[i],a,i).ans).length;
+ if(un&&!confirm(`Tienes ${un} pregunta(s) sin responder. ¿Finalizar de todos modos?`))return;
+ result();
+}
+
+function result(){
+ S.R=Q.preguntas.map((q,i)=>grade(q,S.ans[i],i));
+ const pts=S.R.reduce((s,r)=>s+r.pts,0),max=total(),pct=max?pts/max*100:0;
+ const cls=pct>=70?'ok':pct>=50?'wa':'bad',msg=pct>=90?'¡Excelente!':pct>=70?'¡Muy bien!':pct>=50?'Aprobado, pero puedes mejorar':'Sigue practicando';
+ app.innerHTML=`<div class="hero"><h1>${msg}</h1><div class="ring"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="54"/><circle id="arc" class="arc ${cls}" cx="60" cy="60" r="54" stroke-dasharray="339.3" stroke-dashoffset="339.3"/></svg><div><span id="pc">0%</span><small id="pt">0 / ${fmt(max)} pts</small></div></div>
+<button class="btn p" onclick="review()">Ver retroalimentación</button><button class="btn" onclick="start()">↻ Reintentar evaluación</button></div>`;
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{$('#arc').style.strokeDashoffset=339.3*(1-pct/100)}));
+ const t0=performance.now();
+ (function tick(t){const k=Math.min(1,(t-t0)/1300),e=1-Math.pow(1-k,3);
+  $('#pc').textContent=Math.round(pct*e)+'%';$('#pt').textContent=fmt(+(pts*e).toFixed(1))+' / '+fmt(max)+' pts';
+  if(k<1)requestAnimationFrame(tick);else $('#pt').textContent=fmt(+pts.toFixed(2))+' / '+fmt(max)+' pts'})(t0);
+}
+
+function review(){
+ const L={ok:'Correcta',part:'Parcial',bad:'Incorrecta',none:'Sin responder'};
+ app.innerHTML=`<button class="btn" style="margin:0 0 4px" onclick="result()">← Resultado</button><h1 style="margin-top:14px">Retroalimentación</h1>`+Q.preguntas.map((q,i)=>{
+  const r=S.R[i],a=S.ans[i],st=!r.ans?'none':r.f===1?'ok':r.f>0?'part':'bad';let b='';
+  if(q.tipo==='vf'){
+   b=`<p>Tu respuesta: <b>${a===undefined?'—':a?'Verdadero':'Falso'}</b></p><p>Correcta: <b>${q.respuesta?'Verdadero':'Falso'}</b></p>`;
+  }else if(q.tipo==='multiple'){
+   b=q.opciones.map((o,k)=>{const s=a.includes(k);return `<div class="ro ${o.correcta?'ok':s?'bad':''}">${o.correcta?'✓':s?'✗':'•'} ${esc(o.texto)}${s?' <em>(tu elección)</em>':''}</div>`}).join('');
+  }else if(q.tipo==='escrita'){
+   const details=r.details||[];
+   b=details.map((d,k)=>{
+    const label=details.length>1?`<b>${k+1}.</b> `:'';
+    if(d.ok)return `<div class="ro ok">✓ ${label}${esc(d.val)}</div>`;
+    if(d.duplicate)return `<div class="ro bad">✗ ${label}${esc(d.val)} <em>(respuesta repetida - solo cuenta 1 vez)</em></div>`;
+    if(d.empty)return `<div class="ro bad">✗ ${label}<em>(en blanco)</em></div>`;
+    return `<div class="ro bad">✗ ${label}${esc(d.val)}</div>`;
+   }).join('');
+   const tList=(r.targets||[]).join(', ');
+   b+=`<p class="mu" style="margin-top:8px;font-size:14px">Respuestas válidas: <b style="color:var(--fg)">${esc(tList||'—')}</b></p>`;
+  }else{
+   const incList=(S&&S.incisos&&S.incisos[i])||q.incisos;
+   b=incList.map((x,k)=>{
+    const c=x.isCorrect!==undefined?x.isCorrect:norm(letra(x,k))===norm(q.respuesta);
+    const s=a===k;
+    return `<div class="ro ${c?'ok':s?'bad':''}">${c?'✓':s?'✗':'•'} <b>${esc(letra(x,k))})</b> ${esc(x.texto)}${s?' <em>(tu elección)</em>':''}</div>`;
+   }).join('');
+  }
+  return `<div class="card rv" style="animation-delay:${Math.min(i,8)*70}ms"><span class="badge ${st}">${L[st]}</span> <span class="mu">${i+1}. · ${fmt(r.pts)} / ${fmt(+q.puntos||0)} pts</span><h3>${esc(q.enunciado)}</h3>${b}</div>`;
+ }).join('')+`<button class="btn p" onclick="start()">↻ Reintentar evaluación</button>`;
+ scrollTo(0,0);
+}
+
+function cargarQuiz(){
+ if(window.QUIZ&&Array.isArray(window.QUIZ.preguntas)&&window.QUIZ.preguntas.length){
+  init(window.QUIZ);
+  return;
+ }
+ const files=['quiz.js','quiz.json','quiz.json.json'];
+ let idx=0;
+ function tryNext(){
+  if(idx>=files.length){
+   loader(location.protocol==='file:'
+    ?'No se encontró quiz.js cargado automáticamente. Si estás abriendo el archivo localmente (file://), puedes seleccionarlo manualmente:'
+    :'No se pudo cargar quiz.js ni quiz.json.');
+   return;
+  }
+  const fn=files[idx++];
+  fetch(fn,{cache:'no-store'})
+   .then(r=>{if(!r.ok)throw 0;return r.text()})
+   .then(t=>{init(pj(t))})
+   .catch(()=>tryNext());
+ }
+ tryNext();
+}
+
+cargarQuiz();
+</script></body></html>
